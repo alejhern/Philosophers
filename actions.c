@@ -21,7 +21,7 @@ void	smart_sleep(int time)
 		usleep(100);
 }
 
-void	print_status(Philosopher *philo, t_table *table, char *msg)
+void	print_status(t_philo *philo, t_table *table, char *msg)
 {
 	sem_wait(table->print);
 	printf("%ld ", timestamp_ms() - table->start_time);

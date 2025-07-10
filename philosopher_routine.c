@@ -14,8 +14,8 @@
 
 void	*monitor_death(void *ptr)
 {
-	t_table		*table;
-	Philosopher	*philo;
+	t_table	*table;
+	t_philo	*philo;
 
 	table = (t_table *)ptr;
 	philo = table->philosopher;
@@ -53,11 +53,12 @@ void	philosopher_routine(t_table *table)
 		print_status(table->philosopher, table, "has released a fork");
 		sem_post(table->forks);
 		print_status(table->philosopher, table, "has released a fork");
-        if (table->philosopher->eat_count >= table->num_must_eat)
-            exit(0);
+		if (table->philosopher->eat_count >= table->num_must_eat)
+			exit(0);
 		print_status(table->philosopher, table, "is sleeping");
 		smart_sleep(table->time_to_sleep);
 		print_status(table->philosopher, table, "is thinking");
 	}
-    printf("%ld %d is done\n", timestamp_ms() - table->start_time,  table->philosopher->id);
+	printf("%ld %d is done\n", timestamp_ms() - table->start_time,
+		table->philosopher->id);
 }

@@ -25,8 +25,7 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-
-enum			PhilosophersState
+enum			e_philo_state
 {
 	THINKING,
 	DEAD,
@@ -35,7 +34,7 @@ enum			PhilosophersState
 	SLEEPING
 };
 
-typedef struct Philosopher
+typedef struct s_philo
 {
 	int			id;
 	long		last_meal;
@@ -43,7 +42,7 @@ typedef struct Philosopher
 	pid_t		pid;
 	pthread_t	monitor_thread;
 	int			state;
-}				Philosopher;
+}				t_philo;
 
 typedef struct s_table
 {
@@ -56,7 +55,7 @@ typedef struct s_table
 	sem_t		*forks;
 	sem_t		*print;
 	sem_t		*dead;
-    Philosopher	*philosopher;
+	t_philo		*philosopher;
 }				t_table;
 
 void			philosopher_routine(t_table *table);
@@ -64,6 +63,6 @@ void			*ft_calloc(size_t nmemb, size_t size);
 long			ft_atol(const char *str);
 long			timestamp_ms(void);
 void			smart_sleep(int time);
-void			print_status(Philosopher *philo, t_table *table, char *msg);
+void			print_status(t_philo *philo, t_table *table, char *msg);
 
 #endif
