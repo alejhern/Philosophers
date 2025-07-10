@@ -56,10 +56,10 @@ typedef struct s_table
 	sem_t		*forks;
 	sem_t		*print;
 	sem_t		*dead;
-    Philosopher	*philosophers;
+    Philosopher	*philosopher;
 }				t_table;
 
-void			philosopher_routine(Philosopher *philo, t_table *table);
+void			philosopher_routine(t_table *table);
 void			*ft_calloc(size_t nmemb, size_t size);
 long			ft_atol(const char *str);
 long			timestamp_ms(void);

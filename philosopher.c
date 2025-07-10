@@ -18,11 +18,11 @@ int	sit_down_at_the_table(Philosopher **philosophers, t_table *table, char **arg
     table->time_to_die = ft_atol(argv[2]);
     table->time_to_eat = ft_atol(argv[3]);
     table->time_to_sleep = ft_atol(argv[4]);
-    table->num_must_eat = -1;
+    table->num_must_eat = INT_MAX;
     if (argv[5])
         table->num_must_eat = ft_atol(argv[5]);
     if (table->num_philos < 1 || table->time_to_die < 1 || table->time_to_eat < 1
-    || table->time_to_sleep < 1 || table->num_must_eat == 0)
+    || table->time_to_sleep < 1 || table->num_must_eat < 1)
         return (printf("min value is 1\n"));
     *philosophers = ft_calloc(table->num_philos, sizeof(Philosopher));
     if (!(*philosophers))
@@ -36,7 +36,6 @@ int	sit_down_at_the_table(Philosopher **philosophers, t_table *table, char **arg
     if (table->forks == SEM_FAILED || table->print == SEM_FAILED || table->dead == SEM_FAILED)
         return (1);
     table->start_time = timestamp_ms();
-    table->philosophers = *philosophers;
     return (0);
 }
 
@@ -54,11 +53,33 @@ void	clean_table(t_table table, Philosopher *philosophers)
     sem_close(table.dead);
 }
 
+void	philosopher(Philosopher *philosophers, t_table table)
+{
+    int id;
+    Philosopher *philosopher;
+
+    id = 0;
+    philosopher = philosophers;
+	while (id < table.num_philos)
+	{
+		philosopher->id = id + 1;
+		philosopher->last_meal = table.start_time;
+		philosopher->pid = fork();
+		if (philosopher->pid == 0)
+		{
+            table.philosopher = philosopher;
+			philosopher_routine(&table);
+			exit(0);
+		}
+		id++;
+        philosopher++;
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	Philosopher	*philosophers;
 	t_table		table;
-	int			i;
 
 	if (argc < 5)
 	{
@@ -68,19 +89,7 @@ int	main(int argc, char **argv)
 	}
 	if (sit_down_at_the_table(&philosophers, &table, argv))
 		return (1);
-	i = 0;
-	while (i < table.num_philos)
-	{
-		philosophers[i].id = i + 1;
-		philosophers[i].last_meal = table.start_time;
-		philosophers[i].pid = fork();
-		if (philosophers[i].pid == 0)
-		{
-			philosopher_routine(&philosophers[i], &table);
-			exit(0);
-		}
-		i++;
-	}
+    philosopher(philosophers, table);
 	clean_table(table, philosophers);
 	return (0);
 }

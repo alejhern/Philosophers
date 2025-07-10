@@ -10,53 +10,54 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "philosopher.h"
 
-void *monitor_death(void *ptr) {
-    t_table *table;
-    Philosopher *philo;
-    
-    table = (t_table *)ptr;
-    philo = table->philosophers;
-    while (1) {
-        if (timestamp_ms() - philo->last_meal > table->time_to_die) {
-            sem_wait(table->print);
-            printf("%ld %d died\n", timestamp_ms() - table->start_time, philo->id);
-            sem_post(table->dead);
-            exit(1);
-        }
-        usleep(1000);
-    }
-    return (NULL);
+void	*monitor_death(void *ptr)
+{
+	t_table		*table;
+	Philosopher	*philo;
+
+	table = (t_table *)ptr;
+	philo = table->philosopher;
+	while (1)
+	{
+		if (timestamp_ms() - philo->last_meal > table->time_to_die)
+		{
+			sem_wait(table->print);
+			printf("%ld %d died\n", timestamp_ms() - table->start_time,
+				philo->id);
+			sem_post(table->dead);
+			exit(1);
+		}
+		usleep(1000);
+	}
+	return (NULL);
 }
 
-void philosopher_routine(Philosopher *philo, t_table *table) {
-    pthread_create(&philo->monitor_thread, NULL, monitor_death, table);
-    pthread_detach(philo->monitor_thread);
-
-    while (1) {
-        // tomar tenedores
-        sem_wait(table->forks);
-        print_status(philo, table, "has taken a fork");
-        sem_wait(table->forks);
-        print_status(philo, table, "has taken a fork");
-
-        // comer
-        print_status(philo, table, "is eating");
-        philo->last_meal = timestamp_ms();
-        smart_sleep(table->time_to_eat);
-        philo->eat_count++;
-
-        // soltar tenedores
-        sem_post(table->forks);
-        sem_post(table->forks);
-
-        // dormir
-        print_status(philo, table, "is sleeping");
-        smart_sleep(table->time_to_sleep);
-
-        // pensar
-        print_status(philo, table, "is thinking");
-    }
+void	philosopher_routine(t_table *table)
+{
+	pthread_create(&table->philosopher->monitor_thread, NULL, monitor_death,
+		table);
+	pthread_detach(table->philosopher->monitor_thread);
+	while (1)
+	{
+		sem_wait(table->forks);
+		print_status(table->philosopher, table, "has taken a fork");
+		sem_wait(table->forks);
+		print_status(table->philosopher, table, "has taken a fork");
+		print_status(table->philosopher, table, "is eating");
+		table->philosopher->last_meal = timestamp_ms();
+		smart_sleep(table->time_to_eat);
+		table->philosopher->eat_count++;
+		sem_post(table->forks);
+		print_status(table->philosopher, table, "has released a fork");
+		sem_post(table->forks);
+		print_status(table->philosopher, table, "has released a fork");
+        if (table->philosopher->eat_count >= table->num_must_eat)
+            exit(0);
+		print_status(table->philosopher, table, "is sleeping");
+		smart_sleep(table->time_to_sleep);
+		print_status(table->philosopher, table, "is thinking");
+	}
+    printf("%ld %d is done\n", timestamp_ms() - table->start_time,  table->philosopher->id);
 }

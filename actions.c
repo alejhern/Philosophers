@@ -10,18 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philosopher.h"
+#include "philosopher.h"
 
-void smart_sleep(int time) {
-    long start = timestamp_ms();
-    while (timestamp_ms() - start < time)
-        usleep(100);
+void	smart_sleep(int time)
+{
+	long	start;
+
+	start = timestamp_ms();
+	while (timestamp_ms() - start < time)
+		usleep(100);
 }
 
-void print_status(Philosopher *philo, t_table *table, char *msg) {
-    sem_wait(table->print);
-    printf("%ld ", timestamp_ms() - table->start_time);
-    printf("%d ", philo->id);
-    printf("%s\n", msg);
-    sem_post(table->print);
+void	print_status(Philosopher *philo, t_table *table, char *msg)
+{
+	sem_wait(table->print);
+	printf("%ld ", timestamp_ms() - table->start_time);
+	printf("%d ", philo->id);
+	printf("%s\n", msg);
+	sem_post(table->print);
 }
