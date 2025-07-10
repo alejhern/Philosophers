@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philosophers
+NAME = philo
 
 SRCS = philosopher.c utils.c philosopher_routine.c actions.c
 OBJS = $(SRCS:.c=.o)
