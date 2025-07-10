@@ -12,8 +12,7 @@
 
 #include "philosopher.h"
 
-int	sit_down_at_the_table(t_philo **philosophers, t_table *table,
-		char **argv)
+int	sit_down_at_the_table(t_philo **philosophers, t_table *table, char **argv)
 {
 	table->num_philos = ft_atol(argv[1]);
 	table->time_to_die = ft_atol(argv[2]);
@@ -70,12 +69,13 @@ void	philosopher(t_philo *philosophers, t_table table)
 		philosopher->pid = fork();
 		if (philosopher->pid == 0)
 		{
-			table.philosopher = philosopher;
-			philosopher_routine(&table);
+			philosopher->table = &table;
+			philosopher_routine(philosopher);
 			exit(0);
 		}
 		id++;
 		philosopher++;
+		usleep(100);
 	}
 }
 

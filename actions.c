@@ -21,11 +21,24 @@ void	smart_sleep(int time)
 		usleep(100);
 }
 
-void	print_status(t_philo *philo, t_table *table, char *msg)
+void	print_status(t_philo *philo, t_table *table, int id)
 {
+	unsigned int	time;
+
+	time = timestamp_ms() - table->start_time;
 	sem_wait(table->print);
-	printf("%ld ", timestamp_ms() - table->start_time);
-	printf("%d ", philo->id);
-	printf("%s\n", msg);
-	sem_post(table->print);
+	if (id == FORK)
+		printf("%u\t%d has taken a fork\n", time, philo->id);
+	else if (id == EATING)
+		printf("%u\t%d is eating\n", time, philo->id);
+	else if (id == SLEEPING)
+		printf("%u\t%d is sleeping\n", time, philo->id);
+	else if (id == THINKING)
+		printf("%u\t%d is thinking\n", time, philo->id);
+	else if (id == DEAD)
+		printf("%u\t%d died\n", time, philo->id);
+	else if (id == DONE)
+		printf("Simulation is Done :)\n");
+	if (id != DEAD)
+		sem_post(table->print);
 }

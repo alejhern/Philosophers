@@ -31,18 +31,10 @@ enum			e_philo_state
 	DEAD,
 	EATING,
 	HUNGRY,
-	SLEEPING
+	SLEEPING,
+	DONE,
+	FORK
 };
-
-typedef struct s_philo
-{
-	int			id;
-	long		last_meal;
-	int			eat_count;
-	pid_t		pid;
-	pthread_t	monitor_thread;
-	int			state;
-}				t_philo;
 
 typedef struct s_table
 {
@@ -55,14 +47,24 @@ typedef struct s_table
 	sem_t		*forks;
 	sem_t		*print;
 	sem_t		*dead;
-	t_philo		*philosopher;
 }				t_table;
 
-void			philosopher_routine(t_table *table);
+typedef struct s_philo
+{
+	int			id;
+	long		last_meal;
+	int			eat_count;
+	pid_t		pid;
+	pthread_t	monitor_thread;
+	int			state;
+	t_table		*table;
+}				t_philo;
+
+void			philosopher_routine(void *ptr);
 void			*ft_calloc(size_t nmemb, size_t size);
 long			ft_atol(const char *str);
 long			timestamp_ms(void);
 void			smart_sleep(int time);
-void			print_status(t_philo *philo, t_table *table, char *msg);
+void			print_status(t_philo *philo, t_table *table, int id);
 
 #endif
