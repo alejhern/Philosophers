@@ -38,9 +38,11 @@ void	philosopher_routine(void *ptr)
 	pthread_detach(philo->monitor_thread);
 	while (philo->eat_count < philo->table->num_must_eat)
 	{
+		sem_wait(philo->table->waiter);
 		sem_wait(philo->table->forks);
 		print_status(philo, philo->table, FORK);
 		sem_wait(philo->table->forks);
+		sem_post(philo->table->waiter);
 		print_status(philo, philo->table, FORK);
 		print_status(philo, philo->table, EATING);
 		philo->last_meal = timestamp_ms();

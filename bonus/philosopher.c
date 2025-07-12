@@ -30,8 +30,10 @@ int	sit_down_at_the_table(t_philo **philosophers, t_table *table, char **argv)
 		return (printf("Could not allocate memory\n"));
 	sem_unlink("/forks");
 	sem_unlink("/print");
+	sem_unlink("/waiter");
 	table->forks = sem_open("/forks", O_CREAT, 0644, table->num_philos);
 	table->print = sem_open("/print", O_CREAT, 0644, 1);
+	table->waiter = sem_open("/waiter", O_CREAT, 0644, 0);
 	if (table->forks == SEM_FAILED || table->print == SEM_FAILED)
 		return (1);
 	table->start_time = timestamp_ms();
@@ -58,13 +60,13 @@ void	clean_table(t_table table, t_philo *philosophers)
 	else
 		while (++index < table.num_philos)
 			waitpid(-1, NULL, 0);
-	while (index < table.num_philos)
-		kill(philosophers[index++].pid, SIGKILL);
 	free(philosophers);
 	sem_close(table.forks);
 	sem_close(table.print);
+	sem_close(table.waiter);
 	sem_unlink("/forks");
 	sem_unlink("/print");
+	sem_unlink("/waiter");
 }
 
 void	philosopher(t_philo *philosophers, t_table table)
@@ -74,14 +76,15 @@ void	philosopher(t_philo *philosophers, t_table table)
 
 	id = 0;
 	philosopher = philosophers;
+	sem_post(table.waiter);
 	while (id < table.num_philos)
 	{
 		philosopher->id = id + 1;
 		philosopher->last_meal = table.start_time;
+		philosopher->table = &table;
 		philosopher->pid = fork();
 		if (philosopher->pid == 0)
 		{
-			philosopher->table = &table;
 			philosopher_routine(philosopher);
 			exit(0);
 		}
