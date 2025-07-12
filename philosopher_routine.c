@@ -36,7 +36,7 @@ void	philosopher_routine(void *ptr)
 	philo = (t_philo *)ptr;
 	pthread_create(&philo->monitor_thread, NULL, monitor_death, philo);
 	pthread_detach(philo->monitor_thread);
-	while (1)
+	while (philo->eat_count < philo->table->num_must_eat)
 	{
 		sem_wait(philo->table->forks);
 		print_status(philo, philo->table, FORK);
@@ -51,7 +51,5 @@ void	philosopher_routine(void *ptr)
 		print_status(philo, philo->table, SLEEPING);
 		smart_sleep(philo->table->time_to_sleep);
 		print_status(philo, philo->table, THINKING);
-		if (philo->eat_count >= philo->table->num_must_eat)
-			exit(0);
 	}
 }

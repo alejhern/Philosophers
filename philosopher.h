@@ -46,7 +46,6 @@ typedef struct s_table
 	long		start_time;
 	sem_t		*forks;
 	sem_t		*print;
-	sem_t		*dead;
 }				t_table;
 
 typedef struct s_philo

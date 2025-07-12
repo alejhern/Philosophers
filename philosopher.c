@@ -30,12 +30,9 @@ int	sit_down_at_the_table(t_philo **philosophers, t_table *table, char **argv)
 		return (printf("Could not allocate memory\n"));
 	sem_unlink("/forks");
 	sem_unlink("/print");
-	sem_unlink("/dead");
 	table->forks = sem_open("/forks", O_CREAT, 0644, table->num_philos);
 	table->print = sem_open("/print", O_CREAT, 0644, 1);
-	table->dead = sem_open("/dead", O_CREAT, 0644, 0);
-	if (table->forks == SEM_FAILED || table->print == SEM_FAILED
-		|| table->dead == SEM_FAILED)
+	if (table->forks == SEM_FAILED || table->print == SEM_FAILED)
 		return (1);
 	table->start_time = timestamp_ms();
 	return (0);
@@ -43,16 +40,31 @@ int	sit_down_at_the_table(t_philo **philosophers, t_table *table, char **argv)
 
 void	clean_table(t_table table, t_philo *philosophers)
 {
-	int	index;
+	int		index;
+	int		status;
+	pid_t	child;
 
 	index = 0;
-	waitpid(-1, NULL, 0);
+	child = waitpid(-1, &status, 0);
+	if (WIFEXITED(status))
+		status = WEXITSTATUS(status);
+	index = 0 - status;
+	if (status)
+	{
+		while (++index < table.num_philos)
+			if (philosophers[index].pid != child)
+				kill(philosophers[index].pid, SIGKILL);
+	}
+	else
+		while (++index < table.num_philos)
+			waitpid(-1, NULL, 0);
 	while (index < table.num_philos)
 		kill(philosophers[index++].pid, SIGKILL);
 	free(philosophers);
 	sem_close(table.forks);
 	sem_close(table.print);
-	sem_close(table.dead);
+	sem_unlink("/forks");
+	sem_unlink("/print");
 }
 
 void	philosopher(t_philo *philosophers, t_table table)
