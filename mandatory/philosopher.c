@@ -42,16 +42,7 @@ int	sit_down_at_the_table(t_philo **philosophers, t_table *table, char **argv)
 	pthread_mutex_init(&table->print, NULL);
 	pthread_mutex_init(&table->meal_check, NULL);
 	pthread_mutex_init(&table->table_mtx, NULL);
-
-	// Configurar filósofos
-	for (i = 0; i < table->num_philos; i++)
-	{
-		(*philosophers)[i].id = i + 1;
-		(*philosophers)[i].eat_count = 0;
-		(*philosophers)[i].left_fork = &table->forks[i];
-		(*philosophers)[i].right_fork = &table->forks[(i + 1) % table->num_philos];
-		(*philosophers)[i].table = table;
-	}
+	pthread_mutex_init(&table->death_lock, NULL);
 	table->start_time = timestamp_ms();
 
 	return (0);
@@ -68,10 +59,11 @@ void	philosopher(t_philo *philosophers, t_table table)
 		philosophers[id].id = id + 1;
 		philosophers[id].last_meal = table.start_time;
 		philosophers[id].table = &table;
+		philosophers[id].right_fork = &table.forks[(id + 1) % table.num_philos];
+		philosophers[id].left_fork = &table.forks[id];
 		philosophers[id].n_meal = 0;
 		pthread_create(&philosophers[id].thread, NULL, philosopher_routine, &philosophers[id]);
 		id++;
-		usleep(1000);
 	}
 	id = -1;
 	while (++id < table.num_philos)
