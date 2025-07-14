@@ -47,6 +47,11 @@ void	*philosopher_routine(void *ptr)
 	pthread_mutex_unlock(&philo->table->table_mtx);
 	pthread_create(&philo->death_thread, NULL, monitor_death, philo);
 	pthread_detach(philo->death_thread);
+	while (philo->table->start_time == 0)
+		usleep(100);
+
+	if (philo->id % 2 == 0)
+		usleep(1000); // ev
 	while (!philo->table->philo_dead
 		&& philo->eat_count < philo->table->num_must_eat)
 	{
