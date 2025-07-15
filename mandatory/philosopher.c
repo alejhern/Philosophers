@@ -35,7 +35,8 @@ static int	sit_down_at_the_table(t_philo **philosophers, t_table *table,
 {
 	int	i;
 
-	set_table(table, argv);
+	if (set_table(table, argv))
+		return (1);
 	*philosophers = ft_calloc(table->num_philos, sizeof(t_philo));
 	if (!(*philosophers))
 		return (printf("Memory allocation failed for philosophers\n"), 1);
