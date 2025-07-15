@@ -20,7 +20,7 @@ CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) philosopher.h
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -lpthread
 
 clean:
