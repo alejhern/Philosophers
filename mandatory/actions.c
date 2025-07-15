@@ -55,7 +55,6 @@ void	eat(t_philo *philo)
 	print_status(philo, philo->table, EATING);
 	update_last_meal(philo);
 	smart_sleep(philo->table->time_to_eat);
-	philo->n_meal++;
 	release_forks(philo);
 }
 

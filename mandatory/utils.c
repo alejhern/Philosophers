@@ -77,5 +77,6 @@ void	update_last_meal(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->table->meal_check);
 	philo->last_meal = timestamp_ms();
+	philo->n_meal++;
 	pthread_mutex_unlock(&philo->table->meal_check);
 }
