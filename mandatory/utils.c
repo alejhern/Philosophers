@@ -66,3 +66,16 @@ long	timestamp_ms(void)
 	gettimeofday(&tv, NULL);
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
+
+void	release_forks(t_philo *philo)
+{
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
+}
+
+void	update_last_meal(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->table->meal_check);
+	philo->last_meal = timestamp_ms();
+	pthread_mutex_unlock(&philo->table->meal_check);
+}

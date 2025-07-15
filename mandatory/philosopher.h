@@ -1,4 +1,3 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -17,7 +16,6 @@
 # include <fcntl.h>
 # include <limits.h>
 # include <pthread.h>
-# include <semaphore.h>
 # include <signal.h>
 # include <stdint.h>
 # include <stdio.h>
@@ -44,7 +42,7 @@ typedef struct s_table
 	long			time_to_eat;
 	long			time_to_sleep;
 	int				num_must_eat;
-	int 			philo_dead;    // bandera de muerte
+	int				philo_dead;
 	pthread_mutex_t	table_mtx;
 	pthread_mutex_t	print;
 	pthread_mutex_t	*forks;
@@ -72,6 +70,11 @@ void				*ft_calloc(size_t nmemb, size_t size);
 long				ft_atol(const char *str);
 long				timestamp_ms(void);
 void				smart_sleep(int time);
+int					try_get_forks(t_philo *philo);
+void				eat(t_philo *philo);
+int					check_if_dead(t_philo *philo);
+void				release_forks(t_philo *philo);
+void				update_last_meal(t_philo *philo);
 void				print_status(t_philo *philo, t_table *table, int id);
 
 #endif

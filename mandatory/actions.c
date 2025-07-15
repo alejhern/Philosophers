@@ -12,36 +12,6 @@
 
 #include "philosopher.h"
 
-void	eat(t_philo *philo)
-{
-	pthread_mutex_lock(philo->left_fork);
-	print_status(philo, philo->table, FORK);
-	pthread_mutex_lock(philo->right_fork);
-	print_status(philo, philo->table, FORK);
-
-	pthread_mutex_lock(&philo->table->table_mtx);
-	print_status(philo, philo->table, EATING);
-	philo->last_meal = timestamp_ms();
-	philo->n_meal++;
-	pthread_mutex_unlock(&philo->table->table_mtx);
-
-	usleep(philo->table->time_to_eat * 1000);
-
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-}
-
-void	sleep_act(t_philo *philo)
-{
-	print_status(philo, philo->table, SLEEPING);
-	usleep(philo->table->time_to_sleep * 1000);
-}
-
-void	think(t_philo *philo)
-{
-	print_status(philo, philo->table, THINKING);
-}
-
 void	smart_sleep(int time)
 {
 	long	start;
@@ -49,6 +19,43 @@ void	smart_sleep(int time)
 	start = timestamp_ms();
 	while (timestamp_ms() - start < time)
 		usleep(100);
+}
+
+int	try_get_forks(t_philo *philo)
+{
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		if (check_if_dead(philo))
+			return (pthread_mutex_unlock(philo->left_fork), 1);
+		print_status(philo, philo->table, FORK);
+		pthread_mutex_lock(philo->right_fork);
+		if (check_if_dead(philo))
+			return (pthread_mutex_unlock(philo->left_fork),
+				pthread_mutex_unlock(philo->right_fork), 1);
+		print_status(philo, philo->table, FORK);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->right_fork);
+		if (check_if_dead(philo))
+			return (pthread_mutex_unlock(philo->right_fork), 1);
+		print_status(philo, philo->table, FORK);
+		pthread_mutex_lock(philo->left_fork);
+		if (check_if_dead(philo))
+			return (pthread_mutex_unlock(philo->right_fork),
+				pthread_mutex_unlock(philo->left_fork), 1);
+		print_status(philo, philo->table, FORK);
+	}
+	return (0);
+}
+
+void	eat(t_philo *philo)
+{
+	print_status(philo, philo->table, EATING);
+	update_last_meal(philo);
+	smart_sleep(philo->table->time_to_eat);
+	release_forks(philo);
 }
 
 void	print_status(t_philo *philo, t_table *table, int id)
@@ -69,6 +76,5 @@ void	print_status(t_philo *philo, t_table *table, int id)
 		printf("%u\t%d died\n", time, philo->id);
 	else if (id == DONE)
 		printf("Simulation is Done :)\n");
-	if (id != DEAD)
-		pthread_mutex_unlock(&table->print);
+	pthread_mutex_unlock(&table->print);
 }
