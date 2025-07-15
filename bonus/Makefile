@@ -6,7 +6,7 @@
 #    By: alejhern <alejhern@student.42barcelon      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/09 18:14:46 by alejhern          #+#    #+#              #
-#    Updated: 2025/07/09 18:14:50 by alejhern         ###   ########.fr        #
+#    Updated: 2025/07/15 14:17:37 by alejhern         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
-$(NAME): $(OBJS) philosopher.h
+$(NAME): $(OBJS) philosopher.h Makefile
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -lpthread
 
 clean:

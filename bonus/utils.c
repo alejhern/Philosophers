@@ -6,7 +6,7 @@
 /*   By: alejhern <alejhern@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/09 14:14:49 by alejhern          #+#    #+#             */
-/*   Updated: 2025/07/09 14:14:55 by alejhern         ###   ########.fr       */
+/*   Updated: 2025/07/15 14:18:01 by alejhern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ long	ft_atol(const char *str)
 	}
 	while (*str)
 	{
-		if (*str >= '0' || *str <= '9')
+		if (*str >= '0' && *str <= '9')
 			result = result * 10 + *str - '0';
 		else
 			return (0);
