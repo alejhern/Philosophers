@@ -62,7 +62,7 @@ static void	philosopher(t_philo *philosophers, t_table *table)
 	while (++id < table->num_philos)
 	{
 		philosophers[id].id = id + 1;
-		philosophers[id].last_meal = timestamp_ms();
+		philosophers[id].last_meal = 0;
 		philosophers[id].table = table;
 		philosophers[id].right_fork = &table->forks[(id + 1)
 			% table->num_philos];

@@ -56,7 +56,16 @@ static void	*monitor_death(void *ptr)
 			pthread_mutex_unlock(&philo->table->death_lock);
 			return (NULL);
 		}
+		usleep(100);
 	}
+}
+
+static void	pre_routine(t_philo *philo)
+{
+	while (philo->table->start_time == 0)
+		usleep(100);
+	if (philo->id % 2 == 0)
+		usleep(100);
 }
 
 void	*philosopher_routine(void *ptr)
@@ -65,6 +74,7 @@ void	*philosopher_routine(void *ptr)
 
 	philo = (t_philo *)ptr;
 	pthread_create(&philo->death_thread, NULL, monitor_death, philo);
+	pre_routine(philo);
 	while (!check_if_dead(philo))
 	{
 		if (check_if_eaten(philo))
